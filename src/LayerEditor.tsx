@@ -101,7 +101,7 @@ export function LayerEditor({
         <input
           type="checkbox"
           checked={layer.flip}
-          onChange={(e) =>
+          onChange={() =>
             setLayer((layer) => ({ ...layer, flip: !layer.flip }))
           }
         />
