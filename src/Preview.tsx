@@ -15,7 +15,13 @@ export function Preview({
   return (
     <svg width={width} height={height} xmlns="http://www.w3.org/2000/svg">
       {layers.map((l) => (
-        <Layer key={l.id} layer={l} width={width} height={height} radius={radius} />
+        <Layer
+          key={l.id}
+          layer={l}
+          width={width}
+          height={height}
+          radius={radius}
+        />
       ))}
     </svg>
   );
@@ -39,18 +45,20 @@ function Layer({
   const { color, direction, flip, line, repetitions, speed } = layer;
   const degPerRepetition = 360 / repetitions;
   const baseAngle = (direction * speed * dt) % 360;
-  const p1x = (flip ? line[2] : line[0]) * radius
-  const p1y = (flip ? line[3] : line[1]) * radius
-  const p2x = (flip ? line[0] : line[2]) * radius
-  const p2y = (flip ? line[1] : line[3]) * radius
+  const p1x = (flip ? line[2] : line[0]) * radius;
+  const p1y = (flip ? line[3] : line[1]) * radius;
+  const p2x = (flip ? line[0] : line[2]) * radius;
+  const p2y = (flip ? line[1] : line[3]) * radius;
   return range(repetitions).map((i) => (
     <path
-    key={i}
+      key={i}
       style={{
         transform: `rotate(${baseAngle + i * degPerRepetition}deg)`,
         transformOrigin: "50% 50%",
       }}
-      d={`M ${width / 2} ${height / 2} c ${p1x} ${p1y}, ${p2x} ${p2y}, ${radius} ${radius}`}
+      d={`M ${width / 2} ${
+        height / 2
+      } c ${p1x} ${p1y}, ${p2x} ${p2y}, ${radius} ${radius}`}
       strokeWidth="5"
       stroke={color}
       fill="transparent"
@@ -58,11 +66,11 @@ function Layer({
   ));
 }
 
-function useAnimationFrame(callback) {
+function useAnimationFrame(callback: (dt: number) => void) {
   // Use useRef for mutable variables that we want to persist
   // without triggering a re-render on their change
-  const requestRef = useRef();
-  const previousTimeRef = useRef();
+  const requestRef = useRef<number | undefined>();
+  const previousTimeRef = useRef<number | undefined>();
 
   const animate = useCallback(
     (time: number) => {
@@ -78,6 +86,8 @@ function useAnimationFrame(callback) {
 
   useEffect(() => {
     requestRef.current = requestAnimationFrame(animate);
-    return () => cancelAnimationFrame(requestRef.current);
+    return () => {
+      if (requestRef.current) cancelAnimationFrame(requestRef.current);
+    };
   }, [animate]); // Make sure the effect runs only once
 }

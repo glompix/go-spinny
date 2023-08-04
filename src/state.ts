@@ -1,4 +1,4 @@
-import { atom } from "jotai";
+import { useAtom } from "jotai";
 import { splitAtom } from "jotai/utils";
 import { uniqueId } from "lodash";
 import { atomWithLocalStorage } from "./persistence";
@@ -10,12 +10,12 @@ export type LayerDescription = {
   direction: 1 | -1; // clockwise or counterclockwise
   repetitions: number; // how many times to repeat the line
   speed: number; // speed in radians per second
-  line: number[];
+  line: [number, number, number, number];
 };
 
 export function makeLayer(): LayerDescription {
   return {
-    id: uniqueId('layer_'),
+    id: uniqueId("layer_"),
     color: "#ff0000",
     direction: 1,
     flip: false,
@@ -25,10 +25,6 @@ export function makeLayer(): LayerDescription {
     line: [0, 0, 1, 1],
   };
 }
-
-export const metaAtom = atom({
-  title: "test",
-});
 
 export const prettyDefaultState: LayerDescription[] = [
   {
@@ -51,6 +47,11 @@ export const prettyDefaultState: LayerDescription[] = [
   },
 ];
 
-export const layersAtom = atomWithLocalStorage("layers", prettyDefaultState);
+export const layersAtom = atomWithLocalStorage<LayerDescription[]>(
+  "layers",
+  prettyDefaultState
+);
+
+export const useLayers = () => useAtom<LayerDescription[]>(layersAtom);
 
 export const splitLayersAtom = splitAtom(layersAtom);

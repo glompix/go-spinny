@@ -1,30 +1,33 @@
 import {} from "@react-three/fiber";
 import { BezierCurveEditor } from "react-bezier-curve-editor";
 import { LayerDescription, layersAtom } from "./state";
-import { Atom, useAtom, useSetAtom } from "jotai";
+import { WritableAtom, useAtom } from "jotai";
 
 export function LayerEditor({
   layerAtom,
   rank,
 }: {
-  layerAtom: Atom<LayerDescription>;
+  layerAtom: WritableAtom<LayerDescription, [LayerDescription], void>;
   rank: number;
 }) {
-  const setLayerList = useSetAtom(layersAtom);
+  const [layerList, setLayerList] = useAtom(layersAtom);
   const [layer, setLayer] = useAtom(layerAtom);
   return (
     <div className="layer-editor">
       <div className="title-row">
         <h4>Layer {rank}</h4>
         <div className="controls">
-          <button title="Duplicate this layer" onClick={() => setLayerList((ls) => [...ls, { ...layer }])}>
+          <button
+            title="Duplicate this layer"
+            onClick={() => setLayerList([...layerList, { ...layer }])}
+          >
             c
           </button>
           <button
-            class="delete"
+            className="delete"
             title="Delete this layer"
             onClick={() =>
-              setLayerList((ls) => ls.filter((l) => l.id !== layer.id))
+              setLayerList(layerList.filter((l) => l.id !== layer.id))
             }
           >
             &mdash;
@@ -36,9 +39,7 @@ export function LayerEditor({
         <input
           type="color"
           value={layer.color}
-          onChange={(e) =>
-            setLayer((layer) => ({ ...layer, color: e.target.value }))
-          }
+          onChange={(e) => setLayer({ ...layer, color: e.target.value })}
         />
       </label>
       <label>
@@ -50,10 +51,10 @@ export function LayerEditor({
           step="1"
           value={layer.repetitions}
           onChange={(e) =>
-            setLayer((layer) => ({
+            setLayer({
               ...layer,
               repetitions: parseInt(e.target.value),
-            }))
+            })
           }
         />
       </label>
@@ -66,10 +67,10 @@ export function LayerEditor({
           step="0.01"
           value={layer.speed}
           onChange={(e) =>
-            setLayer((layer) => ({
+            setLayer({
               ...layer,
               speed: parseFloat(e.target.value),
-            }))
+            })
           }
         />
       </label>
@@ -81,7 +82,7 @@ export function LayerEditor({
             type="radio"
             radioGroup="direction"
             checked={layer.direction === 1}
-            onChange={() => setLayer((layer) => ({ ...layer, direction: 1 }))}
+            onChange={() => setLayer({ ...layer, direction: 1 })}
           />
           clockwise
         </label>
@@ -90,7 +91,7 @@ export function LayerEditor({
             type="radio"
             radioGroup="direction"
             checked={layer.direction === -1}
-            onChange={() => setLayer((layer) => ({ ...layer, direction: -1 }))}
+            onChange={() => setLayer({ ...layer, direction: -1 })}
           />
           counter-clockwise
         </label>
@@ -101,15 +102,13 @@ export function LayerEditor({
         <input
           type="checkbox"
           checked={layer.flip}
-          onChange={() =>
-            setLayer((layer) => ({ ...layer, flip: !layer.flip }))
-          }
+          onChange={() => setLayer({ ...layer, flip: !layer.flip })}
         />
       </label>
       <BezierCurveEditor
         value={layer.line}
         onChange={(line) => {
-          setLayer((layer) => ({ ...layer, line }));
+          setLayer({ ...layer, line });
         }}
       />
     </div>

@@ -8,7 +8,7 @@ export function Menu() {
     <nav>
       <button
         onClick={() => {
-          setLayers((layers) => [...layers, makeLayer()]);
+          setLayers([...layers, makeLayer()]);
         }}
       >
         + Add Layer
@@ -33,7 +33,7 @@ export function Menu() {
               if (!Array.isArray(parsedValue)) {
                 throw new Error("Not an array");
               }
-              setLayers(() => parsedValue);
+              setLayers(parsedValue);
               alert("Pasted from clipboard!");
             } catch (e) {
               alert("Failed to paste. Probaby garbage in your clipboard.");
@@ -46,7 +46,7 @@ export function Menu() {
       </button>
       <button
         onClick={() => {
-          setLayers(() => prettyDefaultState);
+          setLayers(prettyDefaultState);
         }}
       >
         Reset
